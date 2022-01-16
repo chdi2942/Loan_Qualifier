@@ -1,5 +1,5 @@
-import fire
 import questionary
+import csv
 from pathlib import Path
 from qualifier.utils.fileio import load_csv
 from qualifier.utils.calculators import (calculate_loan_to_value_ratio, calculate_monthly_debt_ratio)
@@ -58,22 +58,34 @@ def find_qualifying_loans(bank_data, credit_score, debt, income, loan, home_valu
 
     return bank_data_filtered
 
-# This function is the main execution point of the application. It triggers all the business logic.
-def run():
-    # Set the file path of the CVS file with the banks and loans information
-    file_path = Path("./data/daily_rate_sheet2.csv")
-    # Load the latest Bank data
-    bank_data = load_bank_data(file_path)
+def save_csv():
+    header = ["Lender", "Max Loan", "Max LTV", "Max DTI", "Min Credit Score", "Interest Rate"]
+    user_path = questionary.text("What output path would you like to use for your filtered loan list csv file?").ask()
 
-    # Get the applicant's information
-    credit_score, debt, income, loan_amount, home_value = get_applicant_info()
+    with open(user_path, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        csvwriter.writerow(header)
+        
+        for row in qualifying_loans:
+            csvwriter.writerow(row)
+
+def save_qualifying_loans():
+    user_input = questionary.confirm("Would you like to save your filtered loan list?").ask()
+    if user_input:
+        save_csv()
+    else:
+        print("Ok, we will not save your filtered loan list.")
+
+file_path = Path("./data/daily_rate_sheet.csv")
    
-    # Find qualifying loans
-    qualifying_loans = find_qualifying_loans(
-        bank_data, credit_score, debt, income, loan_amount, home_value
-    )    
-    # Print the list of qualifying loans
-    print(qualifying_loans)
-
-if __name__ == '__main__':
-    fire.Fire(run)
+# Load the latest Bank data
+bank_data = load_bank_data(file_path)
+    
+# Get the applicant's information
+credit_score, debt, income, loan_amount, home_value = get_applicant_info()
+    
+qualifying_loans = find_qualifying_loans(
+    bank_data, credit_score, debt, income, loan_amount, home_value
+)
+save_qualifying_loans()
