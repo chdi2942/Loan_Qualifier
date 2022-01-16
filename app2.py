@@ -8,8 +8,7 @@ from qualifier.filters.credit_score import filter_credit_score
 from qualifier.filters.debt_to_income import filter_debt_to_income
 from qualifier.filters.loan_to_value import filter_loan_to_value
 
-# This function loads a CSV file with the list of banks and available loans information
-# from the file defined in `file_path`
+# This function loads a CSV file with the list of banks and available loans information from user input
 def load_bank_data(file_path):
     '''Ask for the file path to the latest banking data and load the CSV file
     
@@ -19,7 +18,8 @@ def load_bank_data(file_path):
     csvpath = questionary.text("Enter a file path to a rate-sheet (.csv):").ask()
     csvpath = Path(csvpath)
     return load_csv(csvpath)
-    
+
+#Function to get user information via questionary
 def get_applicant_info():
     credit_score = questionary.text("What's your credit score?").ask()
     debt = questionary.text("What is your current debt?").ask()
@@ -27,6 +27,7 @@ def get_applicant_info():
     loan_amount = questionary.text("What is the loan amount you wish to receive?").ask()
     home_value = questionary.text("What is the value of your home?").ask()
 
+    #converts user inputs to correct data types
     credit_score = int(credit_score)
     debt = float(debt)
     income = float(income)
@@ -35,10 +36,7 @@ def get_applicant_info():
 
     return credit_score, debt, income, loan_amount, home_value
 
-# This function implements the following user story:
-# As a customer,
-# I want to know what are the best loans in the market according to my financial profile
-# so that I can choose the best option according to my needs
+#Gives MDR and LTV for user and filters loans according to user's needs
 def find_qualifying_loans(bank_data, credit_score, debt, income, loan, home_value):
     # Calculate the monthly debt ratio
     monthly_debt_ratio = calculate_monthly_debt_ratio(debt, income)
@@ -58,10 +56,15 @@ def find_qualifying_loans(bank_data, credit_score, debt, income, loan, home_valu
 
     return bank_data_filtered
 
+#Function is called if they select "Yes" in save_qualifying_list function
 def save_csv():
+
     header = ["Lender", "Max Loan", "Max LTV", "Max DTI", "Min Credit Score", "Interest Rate"]
+
+    #asks user what path to save filtered loan list
     user_path = questionary.text("What output path would you like to use for your filtered loan list csv file?").ask()
 
+    #creates new csv file for filtered loan list
     with open(user_path, 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
 
@@ -70,12 +73,17 @@ def save_csv():
         for row in qualifying_loans:
             csvwriter.writerow(row)
 
+#Asks user if they would like to save their filtered loan list
 def save_qualifying_loans():
     user_input = questionary.confirm("Would you like to save your filtered loan list?").ask()
     if user_input:
+        # If they select yes, move them to save_csv function
         save_csv()
     else:
+        # If they select no, tell them their list will not be saved
         print("Ok, we will not save your filtered loan list.")
+
+'''This is where the program starts'''
 
 file_path = Path("./data/daily_rate_sheet.csv")
    
@@ -84,8 +92,10 @@ bank_data = load_bank_data(file_path)
     
 # Get the applicant's information
 credit_score, debt, income, loan_amount, home_value = get_applicant_info()
-    
+
+#Find qualifying loans based on user input   
 qualifying_loans = find_qualifying_loans(
     bank_data, credit_score, debt, income, loan_amount, home_value
 )
+#Call the save_qualifying_loan function to ask user if they would like to save
 save_qualifying_loans()

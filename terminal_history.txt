@@ -1,0 +1,18 @@
+Invalid macro definition.
+C:/Users/Chris/anaconda3/Scripts/activate
+conda activate dev
+C:/Users/Chris/anaconda3/envs/dev/python.exe c:/Users/Chris/Documents/FintechWorkspace/PP_Week_2/Loan_Qualifier/app2.py
+cd PP_Week_2
+cd Loan_Qualifier
+python app2.py
+C:/Users/Chris/anaconda3/envs/dev/python.exe c:/Users/Chris/Documents/FintechWorkspace/PP_Week_2/Loan_Qualifier/app2.py
+python app2.py
+C:/Users/Chris/anaconda3/envs/dev/python.exe c:/Users/Chris/Documents/FintechWorkspace/PP_Week_2/Loan_Qualifier/app2.py
+python app2.py
+git status
+git add app2.py
+git status
+git remote -v
+git commit -m "Updated code with improved UI"
+git push
+doskey /history 50 > terminal_history.txt
